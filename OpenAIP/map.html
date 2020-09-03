@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <!--
+    Based on http://maps.openaip.net
+    (c) Alain Bertrand - 2020
+    -->
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.css' integrity='sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==' crossorigin='anonymous' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js' integrity='sha512-YHQNqPhxuCY2ddskIbDlZfwY6Vx3L3w9WRbyJCY81xpqLmrM6rL2+LocBgeVHwGY9SXYfQWJ+lcEWx1fKS2s8A==' crossorigin='anonymous'></script>
+    <!--<script src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.js' integrity='sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==' crossorigin='anonymous'></script>-->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/leaflet.js' crossorigin='anonymous'></script>
+</head>
+<body scroll='no'>
+    <div id='map' style='position: absolute; top: 0px; right: 0px; left: 0px; bottom: 0px; overflow: hidden;'></div>
+    <script>
+        var initMapCenter = [47.442, 8.23];
+        var initMapZoom = 10;
+        var southWest = new L.LatLng(-90, -180),
+            northEast = new L.LatLng(90, 180),
+            maxExtent = new L.LatLngBounds(southWest, northEast);
+
+        var iconAirplane = L.divIcon({
+            html: '<div id="imageAirplane"><img src="data:image/png;base64,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"></div>',
+            iconSize: [40, 40],
+            iconAnchor: [20, 20],
+            className: 'currentAirplane'
+        });
+
+        var osm = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 14,
+            minZoom: 4,
+            format: 'image/png',
+            transparent: true,
+            subdomains: ['a', 'b', 'c']
+        });
+
+        var openaip_cached_basemap = new L.TileLayer('http://{s}.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_basemap@EPSG%3A900913@png/{z}/{x}/{y}.png', {
+            maxZoom: 14,
+            minZoom: 4,
+            tms: true,
+            detectRetina: true,
+            subdomains: '12',
+            format: 'image/png',
+            transparent: true
+        });
+
+        //hotspot map
+        var openaip_cached_hotspot = new L.TileLayer('http://{s}.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_approved_hotspots@EPSG%3A900913@png/{z}/{x}/{y}.png', {
+            maxZoom: 14,
+            minZoom: 8,
+            tms: true,
+            detectRetina: true,
+            subdomains: '12',
+            format: 'image/png',
+            transparent: true
+        });
+
+        var openaip_airspace_labels = new L.TileLayer.WMS('http://{s}.tile.maps.openaip.net/geowebcache/service/wms', {
+            maxZoom: 14,
+            minZoom: 12,
+            layers: 'openaip_approved_airspaces_labels',
+            tileSize: 1024,
+            detectRetina: true,
+            subdomains: '12',
+            format: 'image/png',
+            transparent: true
+        });
+
+        var openaip_basemap_phys_osm = L.featureGroup([osm, openaip_cached_basemap]);
+        var map = new L.Map('map', {
+            layers: [openaip_basemap_phys_osm],
+            center: initMapCenter, //center to Butterfly coordinates (Sadhausen)
+            zoom: initMapZoom,
+            crs: L.CRS.EPSG900913,
+            attributionControl: false,
+            maxBounds: maxExtent,
+            scrollWheelZoom: true
+        });
+        var airplane = L.marker([47.442, 8.23], { icon: iconAirplane }).addTo(map);
+
+        $('#map').on('resize', function () {
+            setTimeout(function () { map.invalidateSize() }, 400);
+        });
+
+        function updateMapSystem() {
+            showAirspaceLabels();
+        }
+
+        function showAirspaceLabels() {
+            if (map.getZoom() >= 12 && !map.hasLayer(openaip_airspace_labels)) {
+                openaip_airspace_labels.addTo(map);
+            }
+            else {
+                openaip_airspace_labels.redraw();
+            }
+        }
+
+        setInterval(updateMapSystem, 500);
+
+        function setPosition(lat, long) {
+            var pos = new L.LatLng(lat, long);
+            map.panTo(pos);
+            airplane.setLatLng(pos);
+        }
+
+        function setRotation(deg) {
+            $('#imageAirplane').css('transform', 'rotate(' + Math.round(deg) + 'deg)');
+        }
+
+        document.oncontextmenu = function () { return false; }
+    </script>
+</body>

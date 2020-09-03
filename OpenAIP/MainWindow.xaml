@@ -1,0 +1,15 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OpenAIP"
+        xmlns:Controls="clr-namespace:Microsoft.Toolkit.Wpf.UI.Controls;assembly=Microsoft.Toolkit.Wpf.UI.Controls.WebView" x:Class="OpenAIP.MainWindow"
+        mc:Ignorable="d"
+        Title="OPENAIP for Flight simulator 2020" Height="450" Width="800" Loaded="Window_Loaded" Unloaded="Window_Unloaded">
+    <Grid x:Name="mainGrid">
+        <!--<WebBrowser Name="mapContainer" Margin="0,0,0,35"></WebBrowser>-->
+        <Controls:WebView Name="mapContainer" Margin="0,0,0,35" />
+        <Ellipse x:Name="connectionLed" Width="20" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="10" Fill="Red" Panel.ZIndex="100000"/>
+    </Grid>
+</Window>
